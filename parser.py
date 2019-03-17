@@ -10,14 +10,21 @@ def parse_conf():
     data = f.read()
     f.close()
 
+    print(data)
+
     if not data:
         exit('no data')
 
     conf = data.split('\n')
 
-    cpu = int(conf[0].split(' ')[1])
-    thread = int(conf[1].split(' ')[1])
-    root = str(conf[2].split(' ')[1])
+    result = {}
+    for pair in conf:
+        pair = pair.split(' ')
+        result[pair[0]] = pair[1]
+
+    cpu = int(result['cpu_limit'])
+    thread = int(result['thread_limit'])
+    root = result['document_root']
 
     return cpu, thread, root
 
