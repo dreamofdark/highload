@@ -33,14 +33,16 @@ class Response:
     index = False
 
     def __init__(self, req):
-        self.req = req.decode()
+        self.req = req.decode("utf-8")
 
     def __parse_req(self):
         return self.req.split('\r\n')[0].split(' ')
 
     def __bad_req(self):
         st = status[self.status_code]
-        return ('HTTP/1.1 %s\r\nDate: %s\r\nServer: %s\r\n' % (st, self.date, self.server)).encode()
+        r = ('HTTP/1.1 %s\r\nDate: %s\r\nServer: %s\r\n' % (st, self.date, self.server)).encode()
+        print(r)
+        return r
 
     def __content_type(self):
         if self.file_type in content_type.keys():
@@ -51,6 +53,7 @@ class Response:
     def __ok_req(self, data):
         st = status[self.status_code]
         file = self.__content_type()
+        print(st)
         return ('HTTP/1.1 %s\r\nDate: %s\r\nServer: %s\r\nContent-Type: %s\r\nContent-Length: %d\r\n\r\n' %
                 (st, self.date, self.server, file, self.content_length)).encode() + data
 
@@ -62,11 +65,13 @@ class Response:
 
     def __get_path(self, root, path):
         path = path[1:]
+        print('__get_path(): path[1:]=%s' % path)
         path = parse.unquote(path)
 
         q = path.find('?')
         if q != -1:
             path = path[0:q]
+            print('__get_path(): path[0:q]=%s' % path)
 
         file = os.path.join(root, path)
 
@@ -79,6 +84,8 @@ class Response:
     def get(self, root):
         param = self.__parse_req()
 
+        print('\n\n%s -- %s %s' % (self.date, param[0], param[1]))
+
         if not (param[0] == 'GET' or param[0] == 'HEAD'):
             self.status_code = 405
             return self.__bad_req()
@@ -88,6 +95,9 @@ class Response:
         if file.find('../') != -1:
             self.status_code = 403
             return self.__bad_req()
+
+        print('get(): exists(%s)=%r' % (file, os.path.exists(file)))
+        print('get(): isfile(%s)=%r' % (file, os.path.isfile(file)))
 
         if os.path.exists(file):
             f = open(file, 'rb')
