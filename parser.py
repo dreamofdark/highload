@@ -23,6 +23,9 @@ def parse_conf():
     for str in conf:
         pair = str.split(' ')
         print(pair)
+        if len(pair) < 2:
+            print('<2')
+            continue
         result[pair[0]] = pair[1]
 
     cpu = int(result['cpu_limit'])
