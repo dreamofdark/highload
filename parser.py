@@ -16,10 +16,13 @@ def parse_conf():
         exit('no data')
 
     conf = data.split('\n')
+    print('parse conf ', conf)
+
 
     result = {}
-    for pair in conf:
-        pair = pair.split(' ')
+    for str in conf:
+        pair = str.split(' ')
+        print(pair)
         result[pair[0]] = pair[1]
 
     cpu = int(result['cpu_limit'])
